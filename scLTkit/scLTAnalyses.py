@@ -170,7 +170,9 @@ class LTAnalyses:
         pre_df = self.data_pre.obs[[self.sel_cluster_name, 'Lineage_fate', 'Lineage_fate_label']]
         pre_df.to_csv(self.savePath + self.run_label_time + '-lineage-analysis' + '.txt', sep='\t')
 
-        self.plotCellDynamicUMAP()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.plotCellDynamicUMAP()
 
         cfrs, afs = fateVectorDiversity(self.data_pre, cell_2lin_cls, fate_cls_name="Lineage_fate")
         ncs, ecs = neighborFateLabelDiversity(self.data_pre, fate_cls_name="Lineage_fate")
