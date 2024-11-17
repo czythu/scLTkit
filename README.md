@@ -11,7 +11,7 @@
 
 ## Installation
 
-The Release version `scLT-kit` python package will be published soon. It can be installed directly via pip:
+The Release version `scLT-kit`+ python package can be installed directly via pip:
 ```
 pip install scLTkit
 ```
