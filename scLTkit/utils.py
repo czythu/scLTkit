@@ -195,11 +195,38 @@ def getLineageMatrix(bars, bars2, ignore_bars=None):
     return np.array(lin_mat)
 
 
+def plotBarcodeFraction(pre_info, pos_info, savePath):
+    colors_pre = ["#B3E5FC", "#81D4FA", "#4FC3F7"]
+    colors_pos = ["#E1C6E6", "#DDA9E4", "#A45DB8"] # "#BA68C8","#E4B3ED", EDE1F8
+    #
+    labels_pre = ['Missing', 'Only pre', 'Transfer to post']
+    labels_pos = ['Missing', 'Only post', 'Inherited from pre']
+
+    fig, axs = plt.subplots(1, 2, figsize=(9, 3))
+
+    wedges1, texts1, autotexts1 = axs[0].pie(pre_info, colors=colors_pre, autopct='%1.1f%%', startangle=90)
+    axs[0].axis('equal')
+    axs[0].set_title('Pre-timepoint barcoding fraction')
+    axs[0].legend(wedges1, labels_pre, title="Pre-barcoding", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
+
+    wedges2, texts2, autotexts2 = axs[1].pie(pos_info, colors=colors_pos, autopct='%1.1f%%', startangle=90)
+    axs[1].axis('equal')
+    axs[1].set_title('Post-timepoint barcoding fraction')
+    axs[1].legend(wedges2, labels_pos, title="Post-barcoding", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
+
+    plt.tight_layout()
+    plt.show()
+
+    fig.savefig(savePath, dpi=300)
+
+    return fig
+
+
 def plotClonalSizes(size_freq_pre, size_freq_pos, savePath):
     fig, axs = plt.subplots(1, 2, figsize=(8, 3))
 
     sorted_counts1 = size_freq_pre.sort_values(ascending=False)
-    axs[0].plot(sorted_counts1.index, sorted_counts1.values, marker='o', color='b')
+    axs[0].plot(sorted_counts1.index, sorted_counts1.values, marker='o', color='#29B6F6')
     axs[0].set_title('Clonal size of pre-timepoint', fontsize=14)
     axs[0].set_xlabel('Clonal size', fontsize=12)
     axs[0].set_ylabel('Counts', fontsize=12)
@@ -207,7 +234,7 @@ def plotClonalSizes(size_freq_pre, size_freq_pos, savePath):
     axs[0].tick_params(axis='x', labelsize=10)
 
     sorted_counts2 = size_freq_pos.sort_values(ascending=False)
-    axs[1].plot(sorted_counts2.index, sorted_counts2.values, marker='o', color='r')
+    axs[1].plot(sorted_counts2.index, sorted_counts2.values, marker='o', color='#BA68C8')
     axs[1].set_title('Clonal size of post-timepoint', fontsize=14)
     axs[1].set_xlabel('Clonal size', fontsize=12)
     axs[1].set_ylabel('Counts', fontsize=12)
@@ -215,8 +242,9 @@ def plotClonalSizes(size_freq_pre, size_freq_pos, savePath):
     axs[1].tick_params(axis='x', labelsize=10)
 
     plt.tight_layout()
+    plt.show()
 
-    fig.savefig(savePath)
+    fig.savefig(savePath, dpi=300)
 
     return fig
 
@@ -243,11 +271,12 @@ def plotSimilarityCompare(cross_sim, cross_lin_mat, title, savePath):
 
     plt.tight_layout()
     plt.savefig(savePath, dpi=300)
+
+    plt.show()
     del(within_clone, other_value)
     gc.collect()
 
     return fig
-    # plt.close()
 
 
 def calculateFractions(scd_obj):
@@ -400,6 +429,8 @@ def plotFlowSankey(flow_info, pre_colors, pos_colors, pre_fractions=None, pos_fr
 
     if title is not None:
         ax.set_title(title)
+
+    plt.show()
 
     if saveFig:
         fig.savefig(saveName, dpi=300, transparent=True, facecolor='none', edgecolor='none', pad_inches=0.0)

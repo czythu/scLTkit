@@ -149,7 +149,6 @@ class LTAnalyses:
         # plt.tight_layout()
         plt.savefig(self.savePath + self.run_label_time + '_combined_umap.png', dpi=300, bbox_inches='tight')
         plt.show()
-
         self.fig_runCelFateDiversity = fig
 
 

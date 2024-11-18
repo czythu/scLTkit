@@ -1,5 +1,7 @@
 # scLT-kit
 
+[![PyPI version](https://badge.fury.io/py/scLTkit.svg)](https://pypi.org/project/scLTkit/)
+
 ## Introduction
 `scLT-kit` is a toolkit for analyzing single-cell lineage-tracing (LT-scSeq) data.
 

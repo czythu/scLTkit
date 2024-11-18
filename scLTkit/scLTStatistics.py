@@ -23,6 +23,7 @@ class LTStatistics:
         self.size_freq_pre = None
         self.size_freq_pos = None
 
+        self.fig_getBarcodeFractions = None
         self.fig_getClonalSizes = None
         print("------End of prepareBasicInfo------")
 
@@ -48,6 +49,10 @@ class LTStatistics:
         print("Number of cells with flow-in information: ", n_in)
         print("Barcoding fraction of pos-timepoint: {:.4f}".format(self.pos_barcode_den))
         print("Flow-in density of pos-timepoint: {:.4f}".format(self.flow_in_den))
+
+        self.fig_getBarcodeFractions = plotBarcodeFraction([n_pre_nan, n_pre-n_pre_nan-n_out, n_out],
+                                                           [n_pos_nan, n_pos-n_pos_nan-n_in, n_in],
+                                                           savePath=self.savePath + self.run_label + '-BarcodeFrac.png')
 
 
     def getClonalSizes(self):
