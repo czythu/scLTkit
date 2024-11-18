@@ -59,7 +59,7 @@ def plotScatter(sc_obj, value='cluster', axis_value='X_umap', labs=['UMAP_1', 'U
                          s=5, alpha=0.6, linewidth=0)
     if legend_title is None:
         legend_title = value
-    ax.legend(title=legend_title, loc=6, bbox_to_anchor=(1.01, 0.5), ncol=1, handletextpad=0)
+    ax.legend(title=legend_title, markerscale=3, loc=6, bbox_to_anchor=(1.01, 0.5), ncol=1, handletextpad=0)
     ax.set_xticklabels([])
     ax.set_xticks([])
     ax.set_yticklabels([])
@@ -257,9 +257,10 @@ def plotSimilarityCompare(cross_sim, cross_lin_mat, title, savePath):
     within_clone = within_clone[within_clone <= 0.99]
     other_value = other_value[other_value <= 0.99]
     # print(np.max(within_clone), np.max(other_value))
-    plt.hist(other_value, color='#F9DF91', fill='#F9DF91', density=True, log=True,
-             bins=20, alpha=0.6, label='Cross-clone')
-    plt.hist(within_clone, color='#A8CFE8', fill='#A8CFE8', density=True, log=True,
+    colors = ['#98DF8A', '#DBDB8D'] # '#F9DF91', '#A8CFE8'
+    plt.hist(other_value, color=colors[0], fill=colors[0], density=True, log=True,
+             bins=20, alpha=0.6, label='Across-clone')
+    plt.hist(within_clone, color=colors[1], fill=colors[1], density=True, log=True,
              bins=20, alpha=0.6, label='Within-clone')
 
     plt.xticks(fontsize=10)

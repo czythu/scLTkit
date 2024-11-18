@@ -147,7 +147,8 @@ class LTAnalyses:
             axs[1+len(pre_celltypes)].axis('off')
 
         # plt.tight_layout()
-        plt.savefig(self.savePath + self.run_label_time + '_combined_umap.png', dpi=300, bbox_inches='tight')
+        plt.savefig(self.savePath + self.run_label_time + '_combined_umap_' + self.sel_cluster_name + '.png',
+                    dpi=300, bbox_inches='tight')
         plt.show()
         self.fig_runCelFateDiversity = fig
 

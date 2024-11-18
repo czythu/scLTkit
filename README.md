@@ -13,7 +13,7 @@
 
 ## Installation
 
-The Release version `scLT-kit`+ python package can be installed directly via pip:
+The Release version of `scLT-kit`+ python package can be installed directly via pip:
 ```
 pip install scLTkit
 ```
@@ -22,7 +22,9 @@ pip install scLTkit
 
 Refer to folder: [tutorial](https://github.com/czythu/scLTkit/tree/main/tutorial) for full pipeline.
 
-Example data: [Larry-Invitro-differentiation](https://cloud.tsinghua.edu.cn/f/1b94b3229f4a4c52985e/?dl=1)
+Example data1: [Larry-Invitro-differentiation](https://cloud.tsinghua.edu.cn/f/1b94b3229f4a4c52985e/?dl=1)
+
+Example data2: [TraCe-seq-tumor](https://cloud.tsinghua.edu.cn/f/dae5b3ff8bd04177bd5f/?dl=1)
 
 Below are the introduction to the main steps in `scLT-kit`.
 
@@ -30,5 +32,3 @@ Below are the introduction to the main steps in `scLT-kit`.
 
 2. `runLTAnalyses`: Main steps of Class `LTAnalyses`, including `runClonalHeterogeneity` (within & cross time-point),
 `runCellDynamics`, `runCellFateDiversity`, and `runSubClusterDiff`
-
-
