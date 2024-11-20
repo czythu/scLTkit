@@ -1,9 +1,13 @@
 # scLT-kit
 
-[![PyPI version](https://badge.fury.io/py/scLTkit.svg)](https://pypi.org/project/scLTkit/)
+[![PyPI version](https://badge.fury.io/py/scLTkit.svg?icon=si%3Apython)](https://pypi.org/project/scLTkit/)
 
 ## Introduction
 `scLT-kit` is a toolkit for analyzing single-cell lineage-tracing (LT-scSeq) data.
+
+<div align=center>
+<img alt="scLT-kit workflow" src="tutorial/scLTkit.png" width="90%"/>
+</div>
 
 ## System Requirements
 - Python version: >= 3.7
@@ -13,7 +17,7 @@
 
 ## Installation
 
-The Release version of `scLT-kit`+ python package can be installed directly via pip:
+The release version of `scLT-kit`+ python package can be installed directly via pip:
 ```
 pip install scLTkit
 ```
@@ -32,3 +36,7 @@ Below are the introduction to the main steps in `scLT-kit`.
 
 2. `runLTAnalyses`: Main steps of Class `LTAnalyses`, including `runClonalHeterogeneity` (within & cross time-point),
 `runCellDynamics`, `runCellFateDiversity`, and `runSubClusterDiff`
+
+## Details
+
+Refer to folder: [tutorial](https://github.com/czythu/scLTkit/tree/main/tutorial/) for technical details.
