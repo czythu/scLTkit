@@ -1,4 +1,4 @@
-##  Tutorial files
+##  Tutorial file descriptions
   - [tutorial/Larry-InvitroDiff.ipynb](https://github.com/czythu/scLTkit/blob/main/tutorial/Larry-InvitroDiff.ipynb): This Jupyter notebook contains the complete analysis pipeline and results for the hematopoietic differentiation data
   presented in Figure 1 of "Lineage tracing on transcriptional landscapes links state to fate during differentiation". The analysis follows two key steps `runLTStatistics` and `runLTAnalyses`.
   Except for the differential analysis including all cell subtypes, the analysis are also performed specifically on several cell subtypes of interest.
