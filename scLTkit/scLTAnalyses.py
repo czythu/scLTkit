@@ -1,10 +1,45 @@
 from .utils import *
 
 class LTAnalyses:
+    """
+    A class to perform lineage tracing analyses, including clonal heterogeneity,
+    cell dynamics, cell fate diversity, and subcluster differential expression.
+
+    Attributes:
+        data_pre (AnnData): Pre-timepoint single-cell data.
+        data_pos (AnnData): Post-timepoint single-cell data.
+        datasetName (str): Name of the dataset.
+        sampleName (str): Name of the sample.
+        dataPath (str): Path to the input data.
+        savePath (str): Path to save results.
+        lineage_identity (str): Column name representing lineage identity in AnnData.
+        pre_name (str): Label for pre-timepoint (default: "pre").
+        pos_name (str): Label for post-timepoint (default: "post").
+        sel_cluster_name (str): Column name for cluster identity (default: "cluster").
+        cls_resolutions (list): Resolutions for clustering analysis.
+    """
+
     def __init__(self, data_pre, data_pos, datasetName, sampleName, dataPath, savePath, lineage_identity,
                  pre_name="pre", pos_name="post", sel_cluster_name="cluster", cls_resolutions=None):
+        """
+        Initializes the LTAnalyses class with basic information and configurations.
+
+        Args:
+            data_pre (AnnData): Pre-timepoint single-cell data.
+            data_pos (AnnData): Post-timepoint single-cell data.
+            datasetName (str): Name of the dataset.
+            sampleName (str): Name of the sample.
+            dataPath (str): Path to the input data.
+            savePath (str): Path to save results.
+            lineage_identity (str): Column name representing lineage identity in AnnData.
+            pre_name (str, optional): Label for pre-timepoint (default: "pre").
+            pos_name (str, optional): Label for post-timepoint (default: "post").
+            sel_cluster_name (str, optional): Column name for cluster identity (default: "cluster").
+            cls_resolutions (list, optional): Resolutions for clustering analysis (default: [0.2, 0.2]).
+        """
         print("------0. Preparing Basic information------")
 
+        # Assign class attributes based on input arguments
         self.data_pre = data_pre
         self.data_pos = data_pos
         self.datasetName = datasetName
@@ -18,6 +53,7 @@ class LTAnalyses:
         self.pos_name = pos_name
         self.sel_cluster_name = sel_cluster_name
 
+        # Define default colors for plotting if not provided
         self.pre_colors = ["#43D9FE", "#E78AC3", "#FEC643", "#A6D854", "#FE6943", "#E5C494", "#33AEB1", "#FFEC1A",
                            "#4878D0", '#984EA3', '#CF747A', '#4DAF4A', '#C2C2C2', '#B5A2E0', '#F9B475']
         self.pos_colors = ["#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#E5C494", "#4878D0",
@@ -28,6 +64,7 @@ class LTAnalyses:
         self.cls_resolutions = cls_resolutions
         self.special_case = "Missing"
 
+        # Initialize variables for analysis
         self.barcodes_pre = None
         self.barcodes_pos = None
         self.cross_lin_mat = None
@@ -35,18 +72,28 @@ class LTAnalyses:
         self.flow_info = None
         self.all_de_df = None
 
+        # Prepare lineage barcodes and lineage matrix
         self.barcodes_pre, self.barcodes_pos = list(self.data_pre.obs[self.lineage_identity]), list(self.data_pos.obs[self.lineage_identity])
         self.cross_lin_mat = getLineageMatrix(bars=self.barcodes_pre, bars2=self.barcodes_pos)
 
+        # Initialize figure containers
         self.fig_runClonalHeterogeneity = []
         self.fig_runCellDynamics = None
         self.fig_runCelFateDiversity = None
 
         print("------End of prepareBasicInfo------")
 
-
     def runClonalHeterogeneity(self, method='Pearson', mode="cross"):
+        """
+        Analyze clonal heterogeneity by comparing transcriptomic similarity within and across clones.
+
+        Args:
+            method (str): Method for similarity calculation (default: 'Pearson').
+            mode (str): Analysis mode - "cross", "pre", or "pos" (default: "cross").
+        """
         print("------Mode: "+mode+" time-point------")
+
+        # Select the appropriate mode for analysis
         if mode == "cross":
             sim_mat = getSimilarityMatrix(self.data_pre, self.data_pos, method=method)
             lin_mat = self.cross_lin_mat
@@ -63,25 +110,32 @@ class LTAnalyses:
             print("------Invalid mode selection for runClonalHeterogeneity------")
             return
 
+        # Plot the similarity comparison
         fig = plotSimilarityCompare(cross_sim=sim_mat,
                                     cross_lin_mat=lin_mat,
                                     title=title,
                                     savePath=self.savePath + self.run_label_time + '-SimDistrComp-hist-' + mode + '.png')
 
+        # Store the figure and clean up variables
         self.fig_runClonalHeterogeneity.append(fig)
         del(sim_mat, lin_mat)
         gc.collect()
         print("------End of Mode: " + mode + " time-point------")
 
-
     def runCellDynamics(self):
+        """
+        Analyze cell dynamics by clustering, calculating fractions, and generating flow Sankey plots.
+        """
+        # Initialize state dynamics object
         scd_obj = scStateDynamics(data_pre=self.data_pre, data_pos=self.data_pos,
                                   pre_name=self.pre_name, pos_name=self.pos_name,
                                   cls_prefixes=['', ''], run_label=self.run_label_time,
                                   pre_colors=self.pre_colors, pos_colors=self.pos_colors,
                                   savePath=self.savePath, saveFigFormat="png")
+        # Perform clustering analysis
         scd_obj = runClustering(scd_obj, cls_resolutions=self.cls_resolutions)
 
+        # Calculate fractions and normalize lineage matrix
         pre_fractions, pos_fractions = calculateFractions(scd_obj)
         t_row_sum = self.cross_lin_mat.sum(axis=1, keepdims=True)
         t_row_sum[t_row_sum == 0] = 1
@@ -90,11 +144,15 @@ class LTAnalyses:
                                             np.where(scd_obj.data_pos.obs['cluster'] == str(j))[0]])
                                      for j in range(scd_obj.n_clus[1])] for i in range(scd_obj.n_clus[0])])
         cls_lineage_mat = cls_lineage_mat / scd_obj.data_pre.shape[0]
+
+        # Create Sankey plot data
         flow_info = {'s': [str(i) for i in range(scd_obj.n_clus[0]) for j in range(scd_obj.n_clus[1])],
                      't': [str(j) for i in range(scd_obj.n_clus[0]) for j in range(scd_obj.n_clus[1])],
                      's_pm': list(cls_lineage_mat.reshape((1, -1))[0]),
                      't_pm': list(cls_lineage_mat.reshape((1, -1))[0])}
         flow_info = pd.DataFrame(flow_info)
+
+        # Generate and save the Sankey plot
         fig = plotFlowSankey(flow_info, self.pre_colors, self.pos_colors, pre_fractions=pre_fractions,
                              pos_fractions=pos_fractions,
                              figwidth=3.62, figheight=6, label_size=18, title=self.pre_name + '->' + self.pos_name,
@@ -102,19 +160,29 @@ class LTAnalyses:
         fig.savefig(self.savePath + self.run_label_time + "-FlowSankey-lineage.png", dpi=300)
         self.fig_runCellDynamics = fig
 
+        # Update object attributes
         self.data_pre, self.data_pos, self.flow_info = scd_obj.data_pre, scd_obj.data_pos, flow_info
 
 
     def plotCellDynamicUMAP(self, fate_colname="Lineage_fate_label"):
+        """
+        Plots UMAP visualizations showing the cell dynamics and lineage fates.
+
+        Args:
+            fate_colname (str): The column name representing the lineage fate labels in the dataset.
+        """
+
         fig_size = 4
         pre_celltypes = np.unique(self.data_pre.obs[self.sel_cluster_name])
         fig, axs = plt.subplots(2+len(pre_celltypes), 1, figsize=(fig_size, fig_size*(2+len(pre_celltypes))))
 
+        # Plot UMAP for pre-timepoint clusters
         with plt.rc_context({'figure.figsize': (fig_size, fig_size)}):
             sc.pl.umap(self.data_pre, color=self.sel_cluster_name, palette=self.pre_colors, show=False, ax=axs[0])
             axs[0].set_title(self.pre_name)
             axs[0].axis('off')
 
+        # Loop over each cell type to plot the lineage fates
         for i in range(len(pre_celltypes)):
             pre_celltype = pre_celltypes[i]
             temp_expr = self.data_pre.copy()
@@ -141,11 +209,13 @@ class LTAnalyses:
                 axs[1+i].set_title('Cell Fate of '+self.pre_name+'-cluster' + str(pre_celltype))
                 axs[1+i].axis('off')
 
+        # Plot UMAP for post-timepoint clusters
         with plt.rc_context({'figure.figsize': (fig_size, fig_size)}):
             sc.pl.umap(self.data_pos, color=self.sel_cluster_name, palette=self.pos_colors, show=False, ax=axs[1+len(pre_celltypes)])
             axs[1+len(pre_celltypes)].set_title(self.pos_name)
             axs[1+len(pre_celltypes)].axis('off')
 
+        # Save the figure
         # plt.tight_layout()
         plt.savefig(self.savePath + self.run_label_time + '_combined_umap_' + self.sel_cluster_name + '.png',
                     dpi=300, bbox_inches='tight')
@@ -154,30 +224,41 @@ class LTAnalyses:
 
 
     def runCellFateDiversity(self):
+        """
+        Calculate diversity metrics for cell fates.
+        This includes computing neighboring cell fate label consistency, cell fate similarity,
+        cell fate randomness, and neighboring cell fate label randomness
+        """
 
         pos_celltypes = self.data_pos.obs[self.sel_cluster_name]
         cell_2lin_cls = np.array([(self.cross_lin_mat[:, np.where(pos_celltypes == celltype)[0]] > 0).sum(axis=1).tolist()
                                   for celltype in np.unique(pos_celltypes)]).T
 
+        # Determine the most likely fate for each cell
         fate_cls = np.unique(pos_celltypes)[np.argmax(cell_2lin_cls, axis=1)]
         fate_cls[np.sum(cell_2lin_cls, axis=1) == 0] = self.special_case
         self.data_pre.obs['Lineage_fate'] = fate_cls
 
+        # Create the fate label for each cell
         fate_cls = self.data_pre.obs[self.sel_cluster_name].astype(str) + ' -> ' + fate_cls
         fate_cls[np.sum(cell_2lin_cls, axis=1) == 0] = self.special_case
         self.data_pre.obs['Lineage_fate_label'] = fate_cls
 
+        # Save the pre-timepoint lineage fate data
         pre_df = self.data_pre.obs[[self.sel_cluster_name, 'Lineage_fate', 'Lineage_fate_label']]
         pre_df.to_csv(self.savePath + self.run_label_time + '-lineage-analysis' + '.txt', sep='\t')
 
+        # Plot UMAP for cell fate dynamics
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.plotCellDynamicUMAP()
 
+        # Calculate the diversity metrics
         cfrs, afs = fateVectorDiversity(self.data_pre, cell_2lin_cls, fate_cls_name="Lineage_fate")
         ncs, ecs = neighborFateLabelDiversity(self.data_pre, fate_cls_name="Lineage_fate")
         self.diversity_metric = [ncs, ecs, cfrs, afs]
 
+        # Print the diversity metrics
         print("Neighboring cell fate label consistency (NFC): {:.4f}".format(ncs))
         print("Neighboring cell fate similarity (NFS): {:.4f}".format(afs))
         print("Cell fate randomness (CFR): {:.4f}".format(cfrs))
@@ -185,6 +266,13 @@ class LTAnalyses:
 
 
     def runSubClusterDiff(self, sel_cls=None, sel_fates=None):
+        """
+        Performs differential analysis for sub-clusters based on lineage fate labels.
+
+        Args:
+            sel_cls (str): The selected cluster for the differential analysis.
+            sel_fates (list): The selected fates to compare.
+        """
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             if sel_fates is None:
@@ -255,6 +343,11 @@ class LTAnalyses:
 
 
     def runLTAnalyses(self):
+        """
+        Executes a series of lineage-based analyses, including clonal heterogeneity, cell dynamics, cell fate diversity,
+        and sub-cluster differential analysis.
+        """
+
         print("------1. Start of runClonalHeterogeneity------")
         self.runClonalHeterogeneity(method='Pearson', mode="cross")
         self.runClonalHeterogeneity(method='Pearson', mode="pre")

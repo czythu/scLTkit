@@ -12,7 +12,7 @@ with open("README.md", "r") as fh:
 
 setup( 
 	name="scLTkit",
-	version="0.0.1",
+	version="0.0.3",
 	author="Zeyu Chen", 
 	author_email="chenzy22@mails.tsinghua.edu.cn", 
     packages=find_packages(),
