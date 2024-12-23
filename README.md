@@ -25,7 +25,8 @@ pip install scLTkit
 ## Technical Details
 
 We compiled all the detailed methods and example outputs of each module in `scLT-kit`
-into a [tutorial](https://github.com/czythu/scLTkit/blob/main/tutorial/scLTkit-technical%20details.pdf) for users.
+into a [document](https://github.com/czythu/scLTkit/blob/main/tutorial/scLTkit-technical%20details.pdf) for users
+(`scLTkit-technical details.pdf` in the [tutorial](https://github.com/czythu/scLTkit/tree/main/tutorial) folder).
 Through this document, users will gain a comprehensive understanding of the principles and usage of the software.
 
 ## Quick Start of scLT-kit & Example datasets
