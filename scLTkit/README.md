@@ -1,4 +1,4 @@
-## scLTkit function descriptions
+## scLT-kit function descriptions
   - [scLTkit/scLTStatistics.py](https://github.com/czythu/scLTkit/blob/main/scLTkit/scLTStatistics.py): This file contains the class `LTStatistics`,
   which includes three main functions:
     - `getBarcodingFractions` calculates the proportion of lineage barcodes, evaluating the coverage of the barcode labeling process in lineage tracing.

@@ -6,7 +6,7 @@
 `scLT-kit` is a toolkit for analyzing single-cell lineage-tracing (LT-scSeq) data.
 
 <div align=center>
-<img alt="scLT-kit workflow" src="tutorial/scLTkit.png" width="90%"/>
+<img alt="scLT-kit workflow" src="tutorial/png/scLTkit.png" width="90%"/>
 </div>
 
 ## System Requirements
@@ -17,10 +17,16 @@
 
 ## Installation
 
-The release version of `scLT-kit`+ python package can be installed directly via pip:
+The release version of `scLT-kit` python package can be installed directly via pip:
 ```
 pip install scLTkit
 ```
+
+## Technical Details
+
+We compiled all the detailed methods and example outputs of each module in `scLT-kit`
+into a [tutorial](https://github.com/czythu/scLTkit/blob/main/tutorial/scLTkit-technical%20details.pdf) for users.
+Through this document, users will gain a comprehensive understanding of the principles and usage of the software.
 
 ## Quick Start of scLT-kit & Example datasets
 
@@ -32,7 +38,7 @@ Example data2: [TraCe-seq-tumor](https://cloud.tsinghua.edu.cn/f/dae5b3ff8bd0417
 
 
 ## File Descriptions
-- scLTkit functions
+- scLT-kit functions
   - [scLTkit/scLTStatistics.py](https://github.com/czythu/scLTkit/blob/main/scLTkit/scLTStatistics.py): This file contains the class `LTStatistics`,
   which includes three main functions:
     - `getBarcodingFractions` calculates the proportion of lineage barcodes, evaluating the coverage of the barcode labeling process in lineage tracing.
@@ -54,7 +60,3 @@ Example data2: [TraCe-seq-tumor](https://cloud.tsinghua.edu.cn/f/dae5b3ff8bd0417
   Except for the differential analysis including all cell subtypes, the analysis are also performed specifically on several cell subtypes of interest.
   - [tutorial/TraCeseq-tumor.ipynb](https://github.com/czythu/scLTkit/blob/main/tutorial/TraCeseq-tumor.ipynb): This Jupyter notebook contains the complete analysis pipeline and results for the Erlotinib-perturbed lung cancer cell line
   presented in `Figure 1` of [Matthew T. Chang et al.](https://www.nature.com/articles/s41587-021-01005-3) The analysis also follows two key steps `runLTStatistics` and `runLTAnalyses`.
-
-
-## Technical Details
-Refer to folder: [tutorial](https://github.com/czythu/scLTkit/tree/main/tutorial/) for technical details.
